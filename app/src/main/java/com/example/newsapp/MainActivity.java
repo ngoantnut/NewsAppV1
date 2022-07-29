@@ -1,6 +1,7 @@
 package com.example.newsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.newsapp.Models.NewsApiResponse;
 import com.example.newsapp.Models.NewsHeadlines;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity  implements SelectListener, 
     CustomAdapter customAdapter;
     ProgressDialog dialog;
     Button b1, b2, b3, b4, b5, b6, b7;
+    SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,19 +47,42 @@ public class MainActivity extends AppCompatActivity  implements SelectListener, 
         b7 = findViewById(R.id.btn_7);
         b7.setOnClickListener(this);
 
+        searchView = findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                dialog.setTitle("Đang tìm  "+ query);
+                dialog.show();
+                RequestManager manager = new RequestManager(MainActivity.this);
+                manager.getNewsHeadlines(listener, "sports", null);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         RequestManager manager = new RequestManager(this);
         manager.getNewsHeadlines(listener, "sports", null);
     }
     private final OnFetchDataListener<NewsApiResponse> listener = new OnFetchDataListener<NewsApiResponse>() {
         @Override
         public void onFetchData(List<NewsHeadlines> list, String message) {
-            showNews(list);
-            dialog.dismiss();
+            if(list.isEmpty()){
+                Toast.makeText(MainActivity.this, "Dữ liệu trống", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                showNews(list);
+                dialog.dismiss();
+            }
+
         }
 
         @Override
         public void enError(String message) {
-
+            Toast.makeText(MainActivity.this, "Lỗi gì đó đã xảy ra", Toast.LENGTH_SHORT).show();
         }
     };
 
