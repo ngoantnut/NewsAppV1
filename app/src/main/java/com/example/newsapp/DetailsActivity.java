@@ -2,7 +2,11 @@ package com.example.newsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,11 +17,13 @@ public class DetailsActivity extends AppCompatActivity {
     NewsHeadlines headlines;
     TextView txt_title, txt_author, txt_time, txt_detail, txt_content;
     ImageView img_news;
+    Button btn_read_all;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        btn_read_all = findViewById(R.id.btn_read_all);
         txt_title = findViewById(R.id.text_detail_title);
         txt_author = findViewById(R.id.text_detail_author);
         txt_time = findViewById(R.id.text_detail_time);
@@ -34,5 +40,22 @@ public class DetailsActivity extends AppCompatActivity {
         txt_detail.setText(headlines.getDescription());
         txt_content.setText(headlines.getContent());
         Picasso.get().load(headlines.getUrlToImage()).into(img_news);
+
+        btn_read_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToUrl();
+                Intent intent = new Intent(DetailsActivity.this, WebActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("url", headlines.getUrl());
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void goToUrl() {
+        Uri uri = Uri.parse(headlines.getUrl());
+        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 }

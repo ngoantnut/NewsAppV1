@@ -52,4 +52,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     public int getItemCount() {
         return headlines.size();
     }
+
+    public void release(){
+        context = null;
+    }
 }

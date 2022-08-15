@@ -111,4 +111,12 @@ public class MainActivity extends AppCompatActivity  implements SelectListener, 
         RequestManager manager = new RequestManager(this);
         manager.getNewsHeadlines(listener, category, null);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(customAdapter!=null){
+            customAdapter.release();
+        }
+    }
 }
